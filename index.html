@@ -2,33 +2,42 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>تحميل القرآن الكريم</title>
+    <title>مولد ومحمل ملفات MP3</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; text-align: center; }
+        input { width: 80%; padding: 10px; margin: 10px 0; }
+        button { padding: 10px 20px; cursor: pointer; background: #28a745; color: white; border: none; }
+    </style>
 </head>
 <body>
-    <h1>موقع تحميل ملفات MP3</h1>
+
+    <h1>مولد روابط التحميل التلقائي</h1>
+    <p>ضع رابط أي سورة هنا (مثلاً: https://server8.mp3quran.net/frs_a/114.mp3)</p>
     
-    <a href="https://server8.mp3quran.net/frs_a/114.mp3" download>تحميل السورة رقم 114</a>
-    
-    <br><br>
-    
-    <button onclick="downloadAll()">تحميل 114 سورة دفعة واحدة</button>
+    <input type="text" id="linkInput" placeholder="ضع الرابط هنا...">
+    <br>
+    <button onclick="processLinks()">توليد وتحميل الـ 114 ملفاً</button>
 
     <script>
-        function downloadAll() {
-            // التنسيق: من 001 إلى 114
+        function processLinks() {
+            const input = document.getElementById('linkInput').value;
+            // استخراج الجزء الأساسي من الرابط وتغيير الرقم
+            // يبحث عن آخر رقم قبل .mp3
+            const baseUrl = input.substring(0, input.lastIndexOf('/') + 1);
+            
             for (let i = 1; i <= 114; i++) {
-                // تحويل الرقم إلى تنسيق 3 خانات (مثل 001، 010، 114)
                 let number = i.toString().padStart(3, '0');
-                let url = `https://server8.mp3quran.net/frs_a/${number}.mp3`;
+                let finalUrl = baseUrl + number + ".mp3";
                 
-                // إنشاء رابط مخفي والضغط عليه
+                // عملية التحميل
                 let link = document.createElement('a');
-                link.href = url;
+                link.href = finalUrl;
                 link.setAttribute('download', '');
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
             }
+            alert("تم إرسال طلبات التحميل للمتصفح، يرجى الموافقة على السماح بالتحميلات المتعددة في شريط المتصفح.");
         }
     </script>
 </body>
