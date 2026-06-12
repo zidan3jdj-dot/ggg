@@ -1,43 +1,566 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html dir="rtl" lang="ar">
 <head>
     <meta charset="UTF-8">
-    <title>مولد ومحمل ملفات MP3</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحميل القرآن الكريم MP3 - سور كاملة</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; text-align: center; }
-        input { width: 80%; padding: 10px; margin: 10px 0; }
-        button { padding: 10px 20px; cursor: pointer; background: #28a745; color: white; border: none; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tahoma', 'Segoe UI', 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #1a2a3a 0%, #0d1b2a 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* البطاقة الرئيسية */
+        .card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 30px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            transition: transform 0.3s;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1a2a3a;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        h1 span {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .sub {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        /* أزرار التبديل */
+        .tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all 0.3s;
+            color: #666;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            box-shadow: 0 5px 15px rgba(46,204,113,0.3);
+        }
+
+        /* حقول الإدخال */
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            font-size: 14px;
+            font-family: monospace;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #2ecc71;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(46,204,113,0.1);
+        }
+
+        /* زر التحميل */
+        .download-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(46,204,113,0.3);
+        }
+
+        .download-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* قائمة السور */
+        .sura-list {
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 15px;
+            padding: 10px;
+        }
+
+        .sura-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border-radius: 12px;
+            transition: all 0.2s;
+        }
+
+        .sura-item:hover {
+            background: #e8f5e9;
+            transform: translateX(-5px);
+        }
+
+        .sura-name {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .sura-number {
+            color: #2ecc71;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .sura-download {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .sura-download:hover {
+            background: #27ae60;
+            transform: scale(1.05);
+        }
+
+        /* شريط التقدم */
+        .progress-bar {
+            margin-top: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            width: 0%;
+            height: 30px;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* رسائل الخطأ والنجاح */
+        .message {
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border-right: 4px solid #28a745;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border-right: 4px solid #dc3545;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* أزرار مساعدة */
+        .helper-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .helper-btn {
+            flex: 1;
+            background: #f0f0f0;
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .helper-btn:hover {
+            background: #e0e0e0;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+        }
+
+        /* أسماء السور */
+        .sura-names {
+            display: none;
+        }
     </style>
 </head>
 <body>
+    <div class="container">
+        <div class="card">
+            <h1>📖 تحميل القرآن الكريم <span>MP3</span></h1>
+            <div class="sub">تحميل فردي أو جماعي لجميع سور القرآن بصوت أشهر القراء</div>
 
-    <h1>مولد روابط التحميل التلقائي</h1>
-    <p>ضع رابط أي سورة هنا (مثلاً: https://server8.mp3quran.net/frs_a/114.mp3)</p>
-    
-    <input type="text" id="linkInput" placeholder="ضع الرابط هنا...">
-    <br>
-    <button onclick="processLinks()">توليد وتحميل الـ 114 ملفاً</button>
+            <!-- أزرار التبديل -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('single')">🎵 تحميل فردي</button>
+                <button class="tab-btn" onclick="switchTab('batch')">📦 تحميل جماعي</button>
+            </div>
+
+            <!-- قسم التحميل الفردي -->
+            <div id="singleTab">
+                <div class="input-group">
+                    <label>🔗 رابط السورة (MP3):</label>
+                    <input type="text" id="singleUrl" placeholder="https://server8.mp3quran.net/frs_a/001.mp3" dir="ltr">
+                    <div class="helper-buttons">
+                        <button class="helper-btn" onclick="setExample('frs_a')">📌 مثال: frs_a (الشريم)</button>
+                        <button class="helper-btn" onclick="setExample('afs_ahmad')">📌 مثال: afs_ahmad (العفاسي)</button>
+                    </div>
+                </div>
+                <button class="download-btn" onclick="downloadSingle()">⬇️ تحميل MP3</button>
+            </div>
+
+            <!-- قسم التحميل الجماعي -->
+            <div id="batchTab" style="display: none;">
+                <div class="input-group">
+                    <label>🔗 رابط القارئ (بدون رقم السورة):</label>
+                    <input type="text" id="batchBaseUrl" placeholder="https://server8.mp3quran.net/frs_a/" dir="ltr">
+                    <div class="helper-buttons">
+                        <button class="helper-btn" onclick="setBatchExample('frs_a')">🎙️ سعد الشريم</button>
+                        <button class="helper-btn" onclick="setBatchExample('afs_ahmad')">🎙️ أحمد العفاسي</button>
+                        <button class="helper-btn" onclick="setBatchExample('h_aabdulaziz')">🎙️ أحمد العجمي</button>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>📊 نطاق السور:</label>
+                    <select id="suraRange">
+                        <option value="1-114">جميع السور (1-114)</option>
+                        <option value="1-50">السور 1-50</option>
+                        <option value="51-114">السور 51-114</option>
+                        <option value="1-30">الجزء الأول (1-30)</option>
+                    </select>
+                </div>
+                <button class="download-btn" onclick="downloadBatch()">📦 تحميل جميع السور (ZIP)</button>
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress-fill" id="progressFill">0%</div>
+                </div>
+            </div>
+
+            <div id="message" class="message"></div>
+        </div>
+
+        <!-- قائمة السور المحملة -->
+        <div class="card" id="suraListCard" style="display: none;">
+            <h3 style="margin-bottom: 20px;">📜 قائمة السور المتاحة</h3>
+            <div id="suraList" class="sura-list"></div>
+        </div>
+
+        <footer>
+            💡 ملاحظة: التحميل الجماعي يقوم بتحميل السور كملفات منفصلة (ZIP)<br>
+            الروابط تعمل فقط للملفات المباشرة على الخادم
+        </footer>
+    </div>
 
     <script>
-        function processLinks() {
-            const input = document.getElementById('linkInput').value;
-            // استخراج الجزء الأساسي من الرابط وتغيير الرقم
-            // يبحث عن آخر رقم قبل .mp3
-            const baseUrl = input.substring(0, input.lastIndexOf('/') + 1);
+        // أسماء السور
+        const suraNames = [
+            "الفاتحة", "البقرة", "آل عمران", "النساء", "المائدة", "الأنعام", "الأعراف", "الأنفال", "التوبة", "يونس",
+            "هود", "يوسف", "الرعد", "إبراهيم", "الحجر", "النحل", "الإسراء", "الكهف", "مريم", "طه",
+            "الأنبياء", "الحج", "المؤمنون", "النور", "الفرقان", "الشعراء", "النمل", "القصص", "العنكبوت", "الروم",
+            "لقمان", "السجدة", "الأحزاب", "سبأ", "فاطر", "يس", "الصافات", "ص", "الزمر", "غافر",
+            "فصلت", "الشورى", "الزخرف", "الدخان", "الجاثية", "الأحقاف", "محمد", "الفتح", "الحجرات", "ق",
+            "الذاريات", "الطور", "النجم", "القمر", "الرحمن", "الواقعة", "الحديد", "المجادلة", "الحشر", "الممتحنة",
+            "الصف", "الجمعة", "المنافقون", "التغابن", "الطلاق", "التحريم", "الملك", "القلم", "الحاقة", "المعارج",
+            "نوح", "الجن", "المزمل", "المدثر", "القيامة", "الإنسان", "المرسلات", "النبأ", "النازعات", "عبس",
+            "التكوير", "الانفطار", "المطففين", "الانشقاق", "البروج", "الطارق", "الأعلى", "الغاشية", "الفجر", "البلد",
+            "الشمس", "الليل", "الضحى", "الشرح", "التين", "العلق", "القدر", "البينة", "الزلزلة", "العاديات",
+            "القارعة", "التكاثر", "العصر", "الهمزة", "الفيل", "قريش", "الماعون", "الكوثر", "الكافرون", "النصر",
+            "المسد", "الإخلاص", "الفلق", "الناس"
+        ];
+
+        let currentTab = 'single';
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (tab === 'single') {
+                document.getElementById('singleTab').style.display = 'block';
+                document.getElementById('batchTab').style.display = 'none';
+            } else {
+                document.getElementById('singleTab').style.display = 'none';
+                document.getElementById('batchTab').style.display = 'block';
+            }
+            
+            document.getElementById('message').style.display = 'none';
+        }
+
+        function setExample(qari) {
+            document.getElementById('singleUrl').value = `https://server8.mp3quran.net/${qari}/001.mp3`;
+        }
+
+        function setBatchExample(qari) {
+            document.getElementById('batchBaseUrl').value = `https://server8.mp3quran.net/${qari}/`;
+        }
+
+        function showMessage(text, type) {
+            const msgDiv = document.getElementById('message');
+            msgDiv.className = `message ${type}`;
+            msgDiv.innerHTML = text;
+            msgDiv.style.display = 'block';
+            setTimeout(() => {
+                msgDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // التحميل الفردي
+        function downloadSingle() {
+            let url = document.getElementById('singleUrl').value.trim();
+            if (!url) {
+                showMessage('الرجاء إدخال رابط MP3', 'error');
+                return;
+            }
+            
+            // استخراج اسم الملف
+            let filename = url.split('/').pop();
+            if (!filename.includes('.mp3')) {
+                filename += '.mp3';
+            }
+            
+            // محاولة التحميل
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            
+            showMessage(`✅ جاري تحميل: ${filename}`, 'success');
+        }
+
+        // التحميل الجماعي
+        async function downloadBatch() {
+            let baseUrl = document.getElementById('batchBaseUrl').value.trim();
+            if (!baseUrl) {
+                showMessage('الرجاء إدخال رابط القارئ', 'error');
+                return;
+            }
+            
+            // التأكد من وجود / في النهاية
+            if (!baseUrl.endsWith('/')) {
+                baseUrl += '/';
+            }
+            
+            const range = document.getElementById('suraRange').value;
+            let [start, end] = range.split('-').map(Number);
+            
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            
+            progressBar.style.display = 'block';
+            
+            showMessage(`🔄 جاري تجهيز ${end - start + 1} سورة...`, 'success');
+            
+            // إنشاء روابط جميع السور
+            const urls = [];
+            for (let i = start; i <= end; i++) {
+                const suraNum = i.toString().padStart(3, '0');
+                urls.push({
+                    url: `${baseUrl}${suraNum}.mp3`,
+                    name: `${suraNum} - ${suraNames[i-1]}.mp3`
+                });
+            }
+            
+            // تحميل جميع الملفات باستخدام JSZip
+            if (typeof JSZip === 'undefined') {
+                // تحميل مكتبة JSZip إذا لم تكن موجودة
+                await loadJSZip();
+            }
+            
+            const zip = new JSZip();
+            let completed = 0;
+            
+            for (let item of urls) {
+                try {
+                    progressFill.style.width = `${(completed / urls.length) * 100}%`;
+                    progressFill.textContent = `${Math.round((completed / urls.length) * 100)}%`;
+                    
+                    const response = await fetch(item.url);
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        zip.file(item.name, blob);
+                    } else {
+                        console.warn(`فشل تحميل: ${item.name}`);
+                    }
+                } catch(e) {
+                    console.warn(`خطأ في ${item.name}:`, e);
+                }
+                completed++;
+                progressFill.style.width = `${(completed / urls.length) * 100}%`;
+                progressFill.textContent = `${Math.round((completed / urls.length) * 100)}%`;
+            }
+            
+            progressFill.style.width = '100%';
+            progressFill.textContent = 'جاري إنشاء الملف...';
+            
+            // إنشاء ملف ZIP وتحميله
+            const content = await zip.generateAsync({ type: 'blob' });
+            const link = document.createElement('a');
+            const qariName = baseUrl.split('/').filter(Boolean).pop() || 'quran';
+            link.href = URL.createObjectURL(content);
+            link.download = `${qariName}_suras_${start}_${end}.zip`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+            
+            progressBar.style.display = 'none';
+            showMessage(`✅ تم تحميل ${completed} سورة بنجاح!`, 'success');
+        }
+        
+        function loadJSZip() {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+        }
+        
+        // عرض قائمة السور عند إدخال رابط
+        document.getElementById('batchBaseUrl')?.addEventListener('input', function() {
+            const baseUrl = this.value.trim();
+            if (baseUrl) {
+                displaySuraList(baseUrl);
+            }
+        });
+        
+        async function displaySuraList(baseUrl) {
+            const card = document.getElementById('suraListCard');
+            const listDiv = document.getElementById('suraList');
+            
+            if (!baseUrl.endsWith('/')) baseUrl += '/';
+            
+            listDiv.innerHTML = '<div style="text-align:center">🔄 جاري التحقق من السور...</div>';
+            card.style.display = 'block';
+            
+            let found = 0;
+            let html = '';
             
             for (let i = 1; i <= 114; i++) {
-                let number = i.toString().padStart(3, '0');
-                let finalUrl = baseUrl + number + ".mp3";
+                const num = i.toString().padStart(3, '0');
+                const url = `${baseUrl}${num}.mp3`;
                 
-                // عملية التحميل
-                let link = document.createElement('a');
-                link.href = finalUrl;
-                link.setAttribute('download', '');
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                try {
+                    const response = await fetch(url, { method: 'HEAD' });
+                    if (response.ok) {
+                        found++;
+                        html += `
+                            <div class="sura-item">
+                                <div>
+                                    <span class="sura-number">${num}</span>
+                                    <span class="sura-name">${suraNames[i-1]}</span>
+                                </div>
+                                <button class="sura-download" onclick="downloadSura('${url}', '${num} - ${suraNames[i-1]}.mp3')">
+                                    ⬇️ تحميل
+                                </button>
+                            </div>
+                        `;
+                    }
+                } catch(e) {}
             }
-            alert("تم إرسال طلبات التحميل للمتصفح، يرجى الموافقة على السماح بالتحميلات المتعددة في شريط المتصفح.");
+            
+            if (found === 0) {
+                listDiv.innerHTML = '<div style="text-align:center;color:#999">❌ لا توجد سور متاحة على هذا الرابط</div>';
+            } else {
+                listDiv.innerHTML = `<div style="margin-bottom:10px;color:#2ecc71">✅ تم العثور على ${found} سورة</div>` + html;
+            }
+        }
+        
+        function downloadSura(url, filename) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            showMessage(`✅ جاري تحميل: ${filename}`, 'success');
         }
     </script>
 </body>
